@@ -87,7 +87,7 @@ class SDFTop:
         for e in self.__edgesAL:
             if intRepVector[self.__sdfG.getSourceIDofEdge(e)]*e.getProduceRate() != \
                     intRepVector[self.__sdfG.getTargetIDofEdge(e)]*e.getConsumeRate():
-                return None
+                return -1
 
         return intRepVector
 
@@ -111,3 +111,6 @@ class SDFTop:
             if self.__RepVector[i].numerator == 0:
                 r = n.__mul__(Fraction(e.getConsumeRate(), e.getProduceRate()))
                 self.setReps(i, r)
+
+    def isConsistency(self):
+        return self.getRepVector() != -1
