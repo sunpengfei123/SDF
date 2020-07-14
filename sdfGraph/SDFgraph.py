@@ -276,6 +276,14 @@ class SDFgraph:
         else:
             print('没有要找的边！')
 
+    def getEdgebyVertex(self, v1: DV.Vertex, v2: DV.Vertex) -> DE.SDFedge:
+        for vv1, vv2, info in self.__sdfG.edges(data=True):
+            if vv1 == v1.getName():
+                if vv2 == v2.getName():
+                    return DE.SDFedge(info['name'], info['delay'], info['consumeRate'], info['produceRate'])
+        print('么有从'+str(v1.getName())+'到'+str(v2.getName())+'的边')
+        return -1
+
     def getEdgeSource(self, e: DE.SDFedge) -> DV.Vertex:
         """
         :param e: 输入边e（Edge类型）
@@ -337,6 +345,32 @@ class SDFgraph:
             vv = self.getEdgeTarget(e)
             vList.append(vv)
         return vList
+
+    def DirectedSubgraph(self):
+        Subgraph =self.getsdfG()
+        remove = []
+        num = 0
+        vv1 = -1
+        vv2 = -1
+        for v1, v2, info in self.getsdfG().edges(data=True):
+            if v1 == vv1:
+                if v2 == vv2:
+                    num = num + 1
+            if info['delay'] != 0:
+                remove.append([v1, v2, num])
+
+            vv1 = v1
+            vv2 = v2
+        Subgraph.remove_edges_from(remove)
+        SubSDFgraph = SDFgraph(Subgraph.name+'_SubSDFgraph')
+        for name, weight in Subgraph.nodes(data=True):
+            v = DV.Vertex(name, weight['exeTimeOnMappedProcessor'])
+            SubSDFgraph.addVertex(v)
+        for v1, v2, info in Subgraph.edges(data=True):
+            e = DE.SDFedge(info['name'], info['delay'], info['produceRate'], info['consumeRate'])
+            SubSDFgraph.addEdge(self.getVertexByname(v1), self.getVertexByname(v2), e)
+        return SubSDFgraph
+
 
     def getAllIncomingVertexIDs(self, v: DV.Vertex) -> List[int]:
         """

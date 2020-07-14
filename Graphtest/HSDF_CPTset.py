@@ -1,3 +1,4 @@
+from analysis import HSDF_CP as Hcp
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -32,31 +33,13 @@ plt.show()
 print('节点信息',g.getsdfG().nodes(data=True))
 print('边信息',g.getsdfG().edges(data=True))
 
-p = nx.dijkstra_path(g.getsdfG(), 'a', 'c', 'delay')
+Hsdf_Cp = Hcp.HSDF_CP(g)
+Hsdf_Cp.HSDF_WD()
+print(Hsdf_Cp.dijkstra)
+print(len(Hsdf_Cp.dijkstra))
+print(len(Hsdf_Cp.dijkstra[2]))
 
-
-subg = g.getsdfG()
-remove = []
-num = 0
-vv1 = -1
-vv2 = -1
-for v1, v2, info in g.getsdfG().edges(data=True):
-    if v1 == vv1:
-        if v2 == vv2:
-            num = num + 1
-    if info['delay'] != 0:
-        print(v1,v2)
-        print(info)
-        remove.append([v1,v2,num])
-
-    vv1 = v1
-    vv2 = v2
-
-print(remove)
-subg.remove_edges_from(remove)
-print(subg.edges(data=True))
-nx.draw_networkx(subg)
-plt.show()
-
-# subg.remove_edge('a','c',0)
-# print(subg.edges(data=True))
+print(Hsdf_Cp.getW())
+print(Hsdf_Cp.getD())
+p = Hsdf_Cp.clockPeriod()
+print(p)

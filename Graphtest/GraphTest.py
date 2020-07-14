@@ -8,20 +8,23 @@ from sdfGraph import DefEdge as DE
 
 g = SDFG.SDFgraph('test')
 
-a = DV.Vertex('a',2)
+a = DV.Vertex('a', 2)
+b = DV.Vertex('b', 3)
+c = DV.Vertex('c', 2)
+e1 = DE.SDFedge('e1', 0, 1, 2)
+e2 = DE.SDFedge('e2', 1, 1, 1)
+e3 = DE.SDFedge('e3', 1, 1, 1)
+e4 = DE.SDFedge('e4', 0, 1, 1)
+e5 = DE.SDFedge('e5', 0, 1, 1)
+
 g.addVertex(a)
-
-b = DV.Vertex('b',3)
 g.addVertex(b)
-
-c = DV.Vertex('c',3)
 g.addVertex(c)
-
-e1 = DE.SDFedge('e1',2,2,2)
-g.addEdge(a,b,e1)
-
-e2 = DE.SDFedge('e2',1,1,1)
-g.addEdge(a,c,e2)
+g.addEdge(a, b, e1)
+g.addEdge(a, c, e2)
+g.addEdge(b, c, e3)
+g.addEdge(b, c, e4)
+g.addEdge(b, c, e5)
 
 print(type(g.getsdfG()))
 nx.draw_networkx(g.getsdfG())
@@ -74,3 +77,12 @@ print(v)
 v = g.getAllIncomingVertexs(b)
 for i in range(len(v)):
     print(v[i].getName())
+
+
+e = g.getEdgebyVertex(c, b)
+print(e)
+
+subg = g.DirectedSubgraph()
+print(subg.getsdfG().edges(data=True))
+nx.draw_networkx(subg.getsdfG())
+plt.show()
