@@ -45,7 +45,7 @@ v = g.getVertexByID(0)
 print(v.getName())
 
 print(g.getName())
-print(g.getDegreeofVertex(a))
+print('g.getDegreeofVertex(a):'+str(g.getDegreeofVertex(a)))
 
 Ev = g.getEdgesofVertex(a)
 for e in Ev:
@@ -86,3 +86,5 @@ subg = g.DirectedSubgraph()
 print(subg.getsdfG().edges(data=True))
 nx.draw_networkx(subg.getsdfG())
 plt.show()
+subg.getsdfG()['a']['b'][0]['name'] = 'eeee1'
+print(subg.getsdfG()['a']['b'][0]['consumeRate'])

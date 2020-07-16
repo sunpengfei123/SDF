@@ -5,7 +5,8 @@ from sdfGraph import SDFTransform
 
 class Retime_HSDF:
     def __init__(self, g: SDFgraph.SDFgraph):
-        self.__sdfG = g
+        gg = g.copySDFG()
+        self.__sdfG = gg
         self.__MinCP = -1
         self.__data =HSDF_CP.HSDF_CP(g)
         self.__retime = []
@@ -13,13 +14,18 @@ class Retime_HSDF:
     def getCP(self):
         return self.__data.clockPeriod()
 
+    def getRetimedSDFG(self):
+        self.__sdfG.Refresh()
+        return  self.__sdfG
+
+    # self.retimedG
     def getRetime(self):
         return self.__retime
 
     # Algorithm FEAS
     def feasibleCPTest_2(self, c: int):
         # 初始化重定时向量
-        for i in self.__sdfG.getVertexSize():
+        for i in range(self.__sdfG.getVertexSize()):
             self.__retime.append(0)
 
         retimedG = SDFgraph.SDFgraph('Retimed_'+str(self.__sdfG.getName()))
@@ -27,15 +33,16 @@ class Retime_HSDF:
 
         cp = 0
         for i in range(self.__sdfG.getVertexSize() - 1):
-            retimedG = tr.retimeSDF(self.__retime)
-            retime_CP = HSDF_CP.HSDF_CP(retimedG)
+            print(self.__retime)
+            self.retimedG = tr.retimeSDF(self.__retime)
+            retime_CP = HSDF_CP.HSDF_CP(self.retimedG)
             cp = retime_CP.clockPeriod()
 
             for j in range(self.__sdfG.getVertexSize()):
                 if retime_CP.pathTime[j] > c:
                     self.__retime[j] = self.__retime[j] +  1
 
-        retime_CP = HSDF_CP.HSDF_CP(retimedG)
+        retime_CP = HSDF_CP.HSDF_CP(self.retimedG)
         cp = retime_CP.clockPeriod()
         print('cp: '+str(cp)+'  c: '+str(c))
         if cp > c:
