@@ -8,7 +8,8 @@ from sdfGraph import SDFTop as Top
 
 class HSDF_CP:
     def __init__(self, g: SDFG.SDFgraph):
-        self.G = g
+        gg = g.copySDFG()
+        self.G = gg
         self.__W = []
         self.__D = []
         self.dijkstra = []
@@ -66,11 +67,16 @@ class HSDF_CP:
         tgtop = Top.SDFTop(tg)
 
         time = -1
+        # print(v.getName())
+        # print(len(tg.getIncomingEdges(v)))
         if len(tg.getIncomingEdges(v)) == 0:
             time=v.getExeTimeOnMappedProcessor()
         else:
             preTime = -1
             for e in tg.getIncomingEdges(v):
+                # print(e.getName())
+                # print(tgtop.getVAL()[tg.getSourceIDofEdge(e)].getName()+'Source_name')
+                # print(tgtop.getVAL()[tg.getTargetIDofEdge(e)].getName() + 'Target_name')
                 tt = self.Time(tg,tgtop.getVAL()[tg.getSourceIDofEdge(e)])
                 if preTime < tt:
                     preTime = tt
@@ -79,6 +85,7 @@ class HSDF_CP:
 
     def clockPeriod(self):
         SubG = self.G.DirectedSubgraph()
+
         # nx.draw_networkx(SubG.getsdfG())
         # plt.show()
         # Sub_HSDF_CP = HSDF_CP(SubG)
@@ -88,6 +95,7 @@ class HSDF_CP:
         # print(D)
         CP = -1
         for v in SubG.getVerticesList():
+            # print(v.getName())
             self.pathTime.append(self.Time(SubG,v))
 
         for i in range(len(self.pathTime)):
