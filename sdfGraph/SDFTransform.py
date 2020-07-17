@@ -4,11 +4,13 @@ from sdfGraph import SDFTop
 
 class SDFTransform:
     def __init__(self, g: SDFgraph.SDFgraph):
+        self.ginitial = g
         gg = g.copySDFG()
         self.sdfG = gg
 
     def retimeSDF(self, r: list):
         rG = SDFgraph.SDFgraph('Retimed_'+str(self.sdfG.getName()))
+        self.sdfG = self.ginitial.copySDFG()
         aTop = SDFTop.SDFTop(self.sdfG)
 
         # create vertices
@@ -34,15 +36,15 @@ class SDFTransform:
 
             indexS = rG.getSourceIDofEdge(e)
             indexT = rG.getTargetIDofEdge(e)
-            print('delayofE:' + str(delayofE))
-            print(rGTop.getVAL()[indexS].getName()+str(indexS)+'   '+str(r[indexS]))
-            print(rGTop.getVAL()[indexT].getName()+str(indexT)+'   '+str(r[indexT]))
+            # print('delayofE:' + str(delayofE))
+            # print(rGTop.getVAL()[indexS].getName()+str(indexS)+'   '+str(r[indexS]))
+            # print(rGTop.getVAL()[indexT].getName()+str(indexT)+'   '+str(r[indexT]))
             newDelayofE = delayofE +r[indexT]*e.getConsumeRate() - r[indexS]*e.getProduceRate()
-            print('newDelayofE:' + str(newDelayofE))
+            # print('newDelayofE:' + str(newDelayofE))
             e.setDelay(newDelayofE)
             rG.Refresh()
-            print('new图：')
-            print(rG.getsdfG().edges(data=True))
+            # print('new图：')
+            # print(rG.getsdfG().edges(data=True))
             # ee[i].setDelay(newDelayofE)
         # print('之前')
         # print(rG.getsdfG().edges(data=True))

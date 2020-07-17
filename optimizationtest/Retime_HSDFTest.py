@@ -13,8 +13,8 @@ b = DV.Vertex('b', 2)
 c = DV.Vertex('c', 3)
 
 e1 = DE.SDFedge('e1', 1, 1, 1)
-e2 = DE.SDFedge('e2', 1, 1, 1)
-e3 = DE.SDFedge('e3', 0, 1, 1)
+e2 = DE.SDFedge('e2', 0, 1, 1)
+e3 = DE.SDFedge('e3', 1, 1, 1)
 
 # e1 = DE.SDFedge('e1', 0, 1, 1)
 # e2 = DE.SDFedge('e2', 0, 1, 1)
@@ -49,6 +49,10 @@ print(Re.getRetime())
 #
 # Rg = tr.retimeSDF([0,1,0,1])
 Rg = Re.getRetimedSDFG()
+_NewCP = Hcp.HSDF_CP(Rg)
+newcp = _NewCP.clockPeriod()
+print(_NewCP.pathTime)
+print(newcp)
 
 print('R节点信息',Rg.getsdfG().nodes(data=True))
 print('R边信息',Rg.getsdfG().edges(data=True))

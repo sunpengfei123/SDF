@@ -519,10 +519,13 @@ class SDFgraph:
 
     def copySDFG(self):
         gg = SDFgraph('copy')
+
         for v in self.getVerticesList():
-            gg.addVertex(v)
+            vv = DV.Vertex(v.getName(), v.getExeTimeOnMappedProcessor())
+            gg.addVertex(vv)
         for e in self.getEdgeList():
-            gg.addEdge(self.getEdgeSource(e), self.getEdgeTarget(e), e)
+            ee = DE.SDFedge(e.getName(),e.getDelay(), e.getProduceRate(), e.getConsumeRate())
+            gg.addEdge(self.getEdgeSource(e), self.getEdgeTarget(e), ee)
         return gg
 
     def Refresh(self):
