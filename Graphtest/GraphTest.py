@@ -26,65 +26,10 @@ g.addEdge(b, c, e3)
 g.addEdge(b, c, e4)
 g.addEdge(b, c, e5)
 
-print(type(g.getsdfG()))
 nx.draw_networkx(g.getsdfG())
 plt.show()
 
-print('节点信息',g.getsdfG().nodes(data=True))
-print('边信息',g.getsdfG().edges(data=True))
+print('节点信息',g.nodes())
+print('边信息',g.edges())
 
 print(g.getVertexSize())
-
-vset = g.getVerticesSet()
-print(str(vset)+"vset")
-
-vlist = g.getVerticesList()
-print(vlist[1].getExeTimeOnMappedProcessor())
-
-v = g.getVertexByID(0)
-print(v.getName())
-
-print(g.getName())
-print('g.getDegreeofVertex(a):'+str(g.getDegreeofVertex(a)))
-
-Ev = g.getEdgesofVertex(a)
-for e in Ev:
-    print(e.getName())
-
-Ev = g.getIncomingEdges(a)
-print(len(Ev))
-
-Ev = g.getOutgoingEdges(a)
-print(Ev == None)
-for e in Ev:
-    print('Outgoing::'+e.getName())
-
-e = g.getIDofEdge(e2)
-print(type(e))
-
-ee = g.getEdgeofID(e)
-print(ee.getName())
-
-eID = g.getAllOutgoingEdgeID(0)
-print(eID)
-
-v = g.getVertexByname('a')
-print(v.getName())
-
-v = g.getTargetIDofEdge(e2)
-print(v)
-
-v = g.getAllIncomingVertexs(b)
-for i in range(len(v)):
-    print(v[i].getName())
-
-
-e = g.getEdgebyVertex(c, b)
-print(e)
-
-subg = g.DirectedSubgraph()
-print(subg.getsdfG().edges(data=True))
-nx.draw_networkx(subg.getsdfG())
-plt.show()
-subg.getsdfG()['a']['b'][0]['name'] = 'eeee1'
-print(subg.getsdfG()['a']['b'][0]['consumeRate'])

@@ -43,7 +43,6 @@ class Retime_HSDF:
                     self.__retime[j] = self.__retime[j] +  1
 
         self.retimedG = tr.retimeSDF(self.__retime)
-
         retime_CP = HSDF_CP.HSDF_CP(self.retimedG)
         cp = retime_CP.clockPeriod()
         print('cp: '+str(cp)+'  c: '+str(c))

@@ -41,8 +41,8 @@ class SDFgraph:
         :return: 返回值是String类型的数组，是所有顶点名字的序列
         """
         Vset = []
-        for name, weight in self.__sdfG.nodes(data=True):
-            Vset.append(name)
+        for v in self.__sdfG.nodes():
+            Vset.append(v.getName())
         return Vset
 
     def getVerticesList(self) -> [DV.Vertex]:
@@ -51,9 +51,7 @@ class SDFgraph:
         :return: 返回值是Vertex类型的数组，Vertex有两个属性v.name和v.exeTimeOnMappedProcessor
         """
         if len(self.__Vlist) == 0:
-            for name, weight in self.__sdfG.nodes(data=True):
-                # v = DV.Vertex(name, weight['exeTimeOnMappedProcessor'])
-                v = weight['vmess']
+            for v in self.__sdfG.nodes():
                 self.__Vlist.append(v)
             return self.__Vlist
         else:
@@ -65,14 +63,12 @@ class SDFgraph:
         :param v: 输入的节点
         :return: 根据节点求他的ID并返回
         """
-        v = v
+        vw = v
         if len(self.__Vlist) == 0:
-            for name, weight in self.__sdfG.nodes(data=True):
-                # v = DV.Vertex(name, weight['exeTimeOnMappedProcessor'])
-                v = weight['vmess']
-                self.__Vlist.append(v)
+            for vv in self.__sdfG.nodes():
+                self.__Vlist.append(vv)
         for i in range(self.__sdfG.number_of_nodes()):
-            if self.__Vlist[i].getName() == v.getName():
+            if self.__Vlist[i].getName() == vw.getName():
                 return i
             if i == int(self.getVertexSize() - 1):
                 print('没有要找的顶点！')
@@ -83,10 +79,8 @@ class SDFgraph:
         :return:返回name对应的Vertex对象
         """
         if len(self.__Vlist) == 0:
-            for Name, weight in self.__sdfG.nodes(data=True):
-                # v = DV.Vertex(Name, weight['exeTimeOnMappedProcessor'])
-                v = weight['vmess']
-                self.__Vlist.append(v)
+            for vv in self.__sdfG.nodes():
+                self.__Vlist.append(vv)
 
         for i in self.__Vlist:
             # print('getVertexByname'+i.getName())
@@ -102,10 +96,8 @@ class SDFgraph:
         :return:返回ID对应的Vertex对象
         """
         if len(self.__Vlist) == 0:
-            for name, weight in self.__sdfG.nodes(data=True):
-                #v = DV.Vertex(name, weight['exeTimeOnMappedProcessor'])
-                v = weight['vmess']
-                self.__Vlist.append(v)
+            for vv in self.__sdfG.nodes():
+                self.__Vlist.append(vv)
 
         if ID < self.__sdfG.number_of_nodes():
             return self.__Vlist[ID]
@@ -127,20 +119,13 @@ class SDFgraph:
         :param v: 输入的节点v（Vertex类型）
         :return: 输出和节点v相连的所有边（Edge类型数组）
         """
-        E = self.getEdgeList()
         Ev = []
-        for v1, v2, info in self.__sdfG.edges(data=True):
+        for v1, v2, ee in self.__sdfG.edges(data=True):
             # print(info['name'])
-            if v1 == v.getName():
-                for e in E:
-                    if e.getName() == info['name']:
-                        # print('you')
-                        Ev.append(e)
-            if v2 == v.getName():
-                for e in E:
-                    if e.getName() == info['name']:
-                        # print('you')
-                        Ev.append(e)
+            if v1 == v:
+                Ev.append(ee['edge'])
+            if v2 == v:
+                Ev.append(ee['edge'])
         return Ev
 
     def getOutgoingEdges(self, v: DV.Vertex) -> List[DE.SDFedge]:
@@ -149,14 +134,10 @@ class SDFgraph:
         :param v: 输入的节点v（Vertex类型）
         :return: 输出从节点v出发的所有边（Edge类型数组）
         """
-        E = self.getEdgeList()
         outE = []
-        for v1, v2, info in self.__sdfG.edges(data=True):
-            if v1 == v.getName():
-                for e in E:
-                    if e.getName() == info['name']:
-
-                        outE.append(e)
+        for v1, v2, ee in self.__sdfG.edges(data=True):
+            if v1 == v:
+                outE.append(ee['edge'])
         return outE
 
     def getIncomingEdges(self, v: DV.Vertex) -> List[DE.SDFedge]:
@@ -165,13 +146,10 @@ class SDFgraph:
         :param v: 输入的节点v（Vertex类型）
         :return: 输出以节点v为终点的所有边（Edge类型数组）
         """
-        E = self.getEdgeList()
         Ev = []
-        for v1, v2, info in self.__sdfG.edges(data=True):
-            if v2 == v.getName():
-                for e in E:
-                    if e.getName() == info['name']:
-                        Ev.append(e)
+        for v1, v2, ee in self.__sdfG.edges(data=True):
+            if v2 == v:
+                Ev.append(ee['edge'])
         return Ev
 
     def getOutDegree(self, v: DV.Vertex):
@@ -210,7 +188,6 @@ class SDFgraph:
         eID = []
         for e in E:
             eID.append(self.getIDofEdge(e))
-
         return eID
 
     def getAllIncomingEdgeID(self, vID: int):
@@ -224,7 +201,6 @@ class SDFgraph:
         eID = []
         for e in E:
             eID.append(self.getIDofEdge(e))
-
         return eID
 
     # get the vertex set
@@ -234,8 +210,8 @@ class SDFgraph:
         :return: 返回所有边名字组成的序列
         """
         Eset = []
-        for v1, v2, info in self.__sdfG.edges(data=True):
-            Eset.append(info['name'])
+        for v1, v2, ee in self.__sdfG.edges(data=True):
+            Eset.append(ee['edge'].getName())
         return Eset
 
     def getEdgeList(self) -> List[DE.SDFedge]:
@@ -245,10 +221,8 @@ class SDFgraph:
         """
         if len(self.__Elist) == 0:
             # print('新的')
-            for v1, v2, info in self.__sdfG.edges(data=True):
-                # e = DE.SDFedge(info['name'], info['delay'], info['produceRate'], info['consumeRate'])
-                e = info['emess']
-                self.__Elist.append(e)
+            for v1, v2, ee in self.__sdfG.edges(data=True):
+                self.__Elist.append(ee['edge'])
             return self.__Elist
         else:
             return self.__Elist
@@ -260,13 +234,11 @@ class SDFgraph:
         :return: 输出边e对应的编号，（从0开始）
         """
         if len(self.__Elist) == 0:
-            for v1, v2, info in self.__sdfG.edges(data=True):
-                #e = DE.SDFedge(info['name'], info['delay'], info['consumeRate'], info['produceRate'])
-                e = info['emess']
-                self.__Elist.append(e)
+            for v1, v2, ee in self.__sdfG.edges(data=True):
+                self.__Elist.append(ee['edge'])
 
         for i in range(self.__sdfG.number_of_edges()):
-            if e.getName() == self.__Elist[i].getName():
+            if e == self.__Elist[i]:
                 return i
             if i == int(self.getEdgeSize() - 1):
                 print('没有要找的边！')
@@ -278,33 +250,32 @@ class SDFgraph:
         :return: 输出ID对应的边(Edge类型)
         """
         if len(self.__Elist) == 0:
-            for v1, v2, info in self.__sdfG.edges(data=True):
-                # e = DE.SDFedge(info['name'], info['delay'], info['consumeRate'], info['produceRate'])
-                e = info['emess']
-                self.__Elist.append(e)
+            for v1, v2, ee in self.__sdfG.edges(data=True):
+                self.__Elist.append(ee['edge'])
         if eID < self.__sdfG.number_of_edges():
             return self.__Elist[eID]
         else:
             print('没有要找的边！')
 
     def getEdgebyVertex(self, v1: DV.Vertex, v2: DV.Vertex) -> DE.SDFedge:
-        for vv1, vv2, info in self.__sdfG.edges(data=True):
-            if vv1 == v1.getName():
-                if vv2 == v2.getName():
-                    return info['emess']
+        for vv1, vv2, ee in self.__sdfG.edges(data=True):
+            if vv1 == v1:
+                if vv2 == v2:
+                    return ee['edge']
         print('么有从'+str(v1.getName())+'到'+str(v2.getName())+'的边')
-        return -1
+
 
     def getEdgeSource(self, e: DE.SDFedge) -> DV.Vertex:
         """
         :param e: 输入边e（Edge类型）
         :return: 输出边e的出发点
         """
-        for v1, v2, info in self.__sdfG.edges(data=True):
-            if v1 != None:
-                if e.getName() == info['name']:
-                    v = self.getVertexByname(v1)
-                    return v
+        for v1, v2, ee in self.__sdfG.edges(data=True):
+            try:
+                if e == ee['edge']:
+                    return v1
+            except Exception:
+                print('没有这个节点')
 
     def getSourceIDofEdge(self, e: DE.SDFedge) -> int:
         """
@@ -327,11 +298,12 @@ class SDFgraph:
         :param e: 输入边e(Edge类型)
         :return: 返回e的目标节点
         """
-        for v1, v2, info in self.__sdfG.edges(data=True):
-            if v1 != None:
-                if e.getName() == info['name']:
-                    v = self.getVertexByname(v2)
-                    return v
+        for v1, v2, ee in self.__sdfG.edges(data=True):
+            try:
+                if e == ee['edge']:
+                    return v2
+            except Exception:
+                print('找不到这样的边')
 
     def getAllOutgoingVertexIDs(self, v: DV.Vertex) -> List[int]:
         """
@@ -360,16 +332,16 @@ class SDFgraph:
         return vList
 
     def DirectedSubgraph(self):
-        Subgraph =self.getsdfG()
+        Subgraph = self.getsdfG()
         remove = []
         num = 0
         vv1 = -1
         vv2 = -1
-        for v1, v2, info in self.getsdfG().edges(data=True):
+        for v1, v2, ee in self.getsdfG().edges(data=True):
             if v1 == vv1:
                 if v2 == vv2:
                     num = num + 1
-            if info['delay'] != 0:
+            if ee['edge'].getDelay() != 0:
                 remove.append([v1, v2, num])
 
             vv1 = v1
@@ -382,92 +354,90 @@ class SDFgraph:
 
         SubSDFgraph = SDFgraph(Subgraph.name+'_SubSDFgraph')
 
-        for name, weight in Subgraph.nodes(data=True):
-            #v = DV.Vertex(name, weight['exeTimeOnMappedProcessor'])
-            v = weight['vmess']
-            SubSDFgraph.addVertex(v)
-        for v1, v2, info in Subgraph.edges(data=True):
+        for vv in Subgraph.nodes():
+            # v = DV.Vertex(name, weight['exeTimeOnMappedProcessor'])
+            SubSDFgraph.addVertex(vv)
+        for v1, v2, ee in Subgraph.edges(data=True):
             # print(v1+v2+str(info))
             # e = DE.SDFedge(info['name'], info['delay'], info['produceRate'], info['consumeRate'])
-            e = info['emess']
             # print('v1:'+v1)
             # print('v2:'+v2)
             # print(self.getVertexByname(v1).getName())
             # print(self.getVertexByname(v2).getName())
             # print('v1:::'+v1)
             # print('v2:::'+v2)
-            SubSDFgraph.addEdge(self.getVertexByname(v1), self.getVertexByname(v2), e)
+            SubSDFgraph.addEdge(v1, v2, ee['edge'])
         return SubSDFgraph
 
-    def setEdgeDelay(self, e: DE.SDFedge, d: int):
-        ee = e
-        ee.setDelay(d)
-
-        num = 0
-        vv1 = -1
-        vv2 = -1
-        for v1, v2, info in self.getsdfG().edges(data=True):
-            # print(self.getsdfG().edges(data=True))
-            if v1 == vv1:
-                if v2 == vv2:
-                    num = num + 1
-            if info['name'] == e.getName():
-                remove = [v1, v1, num]
-                break
-        # print('yici------------------------------------------------')
-
-        v1 = self.getEdgeSource(e)
-        v2 = self.getEdgeTarget(e)
-        self.getsdfG().remove_edge(self.getEdgeSource(e).getName(), self.getEdgeTarget(e).getName(), num)
-        # print(ee.getDelay())
-        self.addEdge(v1, v2, ee)
-        # print('加边之后')
-        # print(self.getsdfG().edges(data=True))
-
-    def setEdgeproduceRate(self, e: DE.SDFedge, produceRate: int):
-        ee = e
-        ee.setProduceRate(produceRate)
-
-        num = 0
-        vv1 = -1
-        vv2 = -1
-        for v1, v2, info in self.getsdfG().edges(data=True):
-            if v1 == vv1:
-                if v2 == vv2:
-                    num = num + 1
-            if info['name'] == e.getName():
-                remove = [v1, v1, num]
-                break
-
-        v1 = self.getEdgeSource(e)
-        v2 = self.getEdgeTarget(e)
-        self.getsdfG().remove_edge(self.getEdgeSource(e).getName(), self.getEdgeTarget(e).getName(), num)
-        self.addEdge(v1, v2, ee)
-
-    def setEdgeconsumeRate(self, e: DE.SDFedge, consumeRate: int):
-        ee = e
-        ee.setConsumeRate(consumeRate)
-
-        num = 0
-        vv1 = -1
-        vv2 = -1
-        for v1, v2, info in self.getsdfG().edges(data=True):
-            if v1 == vv1:
-                if v2 == vv2:
-                    num = num + 1
-            if info['name'] == e.getName():
-                remove = [v1, v1, num]
-                break
-
-        v1 = self.getEdgeSource(e)
-        v2 = self.getEdgeTarget(e)
-        self.getsdfG().remove_edge(self.getEdgeSource(e).getName(), self.getEdgeTarget(e).getName(), num)
-        self.addEdge(v1, v2, ee)
-
-    def setVertexexeTime(self, v: DV.Vertex, exeTime: int):
-        vv = v
-        vv.setExeTimeOnMappedProcessor(exeTime)
-        self.addVertex(vv)
+    # def setEdgeDelay(self, e: DE.SDFedge, d: int):
+    #     ee = e
+    #     ee.setDelay(d)
+    #
+    #     num = 0
+    #     vv1 = -1
+    #     vv2 = -1
+    #     for v1, v2, info in self.getsdfG().edges(data=True):
+    #         # print(self.getsdfG().edges(data=True))
+    #         if v1 == vv1:
+    #             if v2 == vv2:
+    #                 num = num + 1
+    #         if info['name'] == e.getName():
+    #             remove = [v1, v1, num]
+    #             break
+    #     # print('yici------------------------------------------------')
+    #
+    #     v1 = self.getEdgeSource(e)
+    #     v2 = self.getEdgeTarget(e)
+    #     self.getsdfG().remove_edge(self.getEdgeSource(e).getName(), self.getEdgeTarget(e).getName(), num)
+    #     # print(ee.getDelay())
+    #     self.addEdge(v1, v2, ee)
+    #     # print('加边之后')
+    #     # print(self.getsdfG().edges(data=True))
+    #
+    # def setEdgeproduceRate(self, e: DE.SDFedge, produceRate: int):
+    #     ee = e
+    #     ee.setProduceRate(produceRate)
+    #
+    #     num = 0
+    #     vv1 = -1
+    #     vv2 = -1
+    #     for v1, v2, info in self.getsdfG().edges(data=True):
+    #         if v1 == vv1:
+    #             if v2 == vv2:
+    #                 num = num + 1
+    #         if info['name'] == e.getName():
+    #             remove = [v1, v1, num]
+    #             break
+    #
+    #     v1 = self.getEdgeSource(e)
+    #     v2 = self.getEdgeTarget(e)
+    #     self.getsdfG().remove_edge(self.getEdgeSource(e).getName(), self.getEdgeTarget(e).getName(), num)
+    #     self.addEdge(v1, v2, ee)
+    #
+    # def setEdgeconsumeRate(self, e: DE.SDFedge, consumeRate: int):
+    #     ee = e
+    #     ee.setConsumeRate(consumeRate)
+    #
+    #     num = 0
+    #     vv1 = -1
+    #     vv2 = -1
+    #     for v1, v2, info in self.getsdfG().edges(data=True):
+    #         if v1 == vv1:
+    #             if v2 == vv2:
+    #                 num = num + 1
+    #         if info['name'] == e.getName():
+    #             remove = [v1, v1, num]
+    #             break
+    #
+    #     v1 = self.getEdgeSource(e)
+    #     v2 = self.getEdgeTarget(e)
+    #     self.getsdfG().remove_edge(self.getEdgeSource(e).getName(), self.getEdgeTarget(e).getName(), num)
+    #     self.addEdge(v1, v2, ee)
+    #
+    # def setVertexexeTime(self, v: DV.Vertex, exeTime: int):
+    #     vv = v
+    #     vv.setExeTimeOnMappedProcessor(exeTime)
+    #     self.addVertex(vv)
 
 
     def getAllIncomingVertexIDs(self, v: DV.Vertex) -> List[int]:
@@ -503,7 +473,7 @@ class SDFgraph:
         :return: 将该节点添加到图中
         """
         self.__VH.append(v)
-        self.__sdfG.add_node(v.getName(), exeTimeOnMappedProcessor=v.getExeTimeOnMappedProcessor(), vmess=v)
+        self.__sdfG.add_node(v)
 
     def addEdge(self, v1: DV.Vertex, v2: DV.Vertex, e: DE.SDFedge):
         """
@@ -514,35 +484,45 @@ class SDFgraph:
         :return: 将边添加到图中
         """
         self.__EH.append(e)
-        self.__sdfG.add_edge(v1.getName(), v2.getName(), name=e.getName(), delay=e.getDelay(),
-                             consumeRate=e.getConsumeRate(), produceRate=e.getProduceRate(), emess=e)
+        self.__sdfG.add_edge(v1, v2, edge=e)
+
+    def nodes(self):
+        vset = []
+        for v in self.getVerticesList():
+            vset.append((v.getName(), v.getExeTimeOnMappedProcessor()))
+        return vset
+
+    def edges(self):
+        eset = []
+        for v1, v2, ee in self.__sdfG.edges(data=True):
+            eset.append((v1.getName(), v2.getName(), ee['edge'].getName(), {'delay', ee['edge'].getDelay()},
+                         {'produceRate', ee['edge'].getProduceRate()}, {'consumeRate', ee['edge'].getConsumeRate()}))
+        return eset
 
     def copySDFG(self):
-        gg = SDFgraph('copy')
-
+        gg = SDFgraph(self.getName()+'_copy')
         for v in self.getVerticesList():
-            vv = DV.Vertex(v.getName(), v.getExeTimeOnMappedProcessor())
-            gg.addVertex(vv)
+            gg.addVertex(v)
         for e in self.getEdgeList():
-            ee = DE.SDFedge(e.getName(),e.getDelay(), e.getProduceRate(), e.getConsumeRate())
-            gg.addEdge(self.getEdgeSource(e), self.getEdgeTarget(e), ee)
+            gg.addEdge(self.getEdgeSource(e), self.getEdgeTarget(e), e)
         return gg
 
-    def Refresh(self):
-        # refreshg = SDFgraph(self.__name)
-        # self.__VH.sort(key=self.sortkey())
-        # self.__EH.sort(key=self.sortkey())
-        # for v in self.__VH:
-        #     refreshg.addVertex(v)
-        # for e in self.__EH:
-        #     refreshg.addEdge(self.getEdgeSource(e))
-        for v in self.getVerticesSet():
-            self.__sdfG.nodes[v]['exeTimeOnMappedProcessor'] = self.__sdfG.nodes[v]['vmess'].getExeTimeOnMappedProcessor()
-
-        for v1, v2, info in self.__sdfG.edges(data=True):
-            # print(v1)
-            # print(v2)
-            self.__sdfG[v1][v2][0]['name'] = self.__sdfG[v1][v2][0]['emess'].getName()
-            self.__sdfG[v1][v2][0]['delay'] = self.__sdfG[v1][v2][0]['emess'].getDelay()
-            self.__sdfG[v1][v2][0]['consumeRate'] = self.__sdfG[v1][v2][0]['emess'].getConsumeRate()
-            self.__sdfG[v1][v2][0]['produceRate'] = self.__sdfG[v1][v2][0]['emess'].getProduceRate()
+    # def Refresh(self):
+    #     # refreshg = SDFgraph(self.__name)
+    #     # self.__VH.sort(key=self.sortkey())
+    #     # self.__EH.sort(key=self.sortkey())
+    #     # for v in self.__VH:
+    #     #     refreshg.addVertex(v)
+    #     # for e in self.__EH:
+    #     #     refreshg.addEdge(self.getEdgeSource(e))
+    #     for v in self.getVerticesSet():
+    #         self.__sdfG.nodes[v]['exeTimeOnMappedProcessor'] = \
+    #             self.__sdfG.nodes[v]['vmess'].getExeTimeOnMappedProcessor()
+    #
+    #     for v1, v2, info in self.__sdfG.edges(data=True):
+    #         # print(v1)
+    #         # print(v2)
+    #         self.__sdfG[v1][v2][0]['name'] = self.__sdfG[v1][v2][0]['emess'].getName()
+    #         self.__sdfG[v1][v2][0]['delay'] = self.__sdfG[v1][v2][0]['emess'].getDelay()
+    #         self.__sdfG[v1][v2][0]['consumeRate'] = self.__sdfG[v1][v2][0]['emess'].getConsumeRate()
+    #         self.__sdfG[v1][v2][0]['produceRate'] = self.__sdfG[v1][v2][0]['emess'].getProduceRate()
