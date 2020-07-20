@@ -1,9 +1,11 @@
 from sdfGraph import SDFgraph
 from sdfGraph import SDFTop
-
+from sdfGraph import DefVertex as DV
+from sdfGraph import DefEdge as DE
 
 class SDFTransform:
     def __init__(self, g: SDFgraph.SDFgraph):
+        self.ginitial = g
         gg = g.copySDFG()
         self.sdfG = gg
 
@@ -13,14 +15,18 @@ class SDFTransform:
 
         # create vertices
         for v in aTop.getVAL():
-            newV = v
-            # newV = DefVertex.Vertex(v.getName(), v.getExeTimeOnMappedProcessor())
+            newV = DV.Vertex(v.getName(), v.getExeTimeOnMappedProcessor())
             rG.addVertex(newV)
 
         # create edges
         for e in aTop.getEAL():
-            newE = e
-            rG.addEdge(aTop.getVAL()[self.sdfG.getSourceIDofEdge(e)], aTop.getVAL()[self.sdfG.getTargetIDofEdge(e)], newE)
+            newE = DE.SDFedge(e.getName(), e.getDelay(), e.getProduceRate(), e.getConsumeRate())
+            for v in rG.getVerticesList():
+                if v.getName() == self.sdfG.getEdgeSource(e).getName():
+                    v1 = v
+                if v.getName() == self.sdfG.getEdgeTarget(e).getName():
+                    v2 = v
+            rG.addEdge(v1, v2, newE)
 
         VL = aTop.getVAL()
         EL = aTop.getEAL()
@@ -34,15 +40,14 @@ class SDFTransform:
 
             indexS = rG.getSourceIDofEdge(e)
             indexT = rG.getTargetIDofEdge(e)
-            print('delayofE:' + str(delayofE))
-            print(rGTop.getVAL()[indexS].getName()+str(indexS)+'   '+str(r[indexS]))
-            print(rGTop.getVAL()[indexT].getName()+str(indexT)+'   '+str(r[indexT]))
+            # print('delayofE:' + str(delayofE))
+            # print(rGTop.getVAL()[indexS].getName()+str(indexS)+'   '+str(r[indexS]))
+            # print(rGTop.getVAL()[indexT].getName()+str(indexT)+'   '+str(r[indexT]))
             newDelayofE = delayofE +r[indexT]*e.getConsumeRate() - r[indexS]*e.getProduceRate()
-            print('newDelayofE:' + str(newDelayofE))
+            # print('newDelayofE:' + str(newDelayofE))
             e.setDelay(newDelayofE)
-            rG.Refresh()
-            print('new图：')
-            print(rG.getsdfG().edges(data=True))
+            # print('new图：')
+            # print(rG.edges())
             # ee[i].setDelay(newDelayofE)
         # print('之前')
         # print(rG.getsdfG().edges(data=True))

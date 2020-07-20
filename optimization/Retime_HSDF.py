@@ -15,8 +15,8 @@ class Retime_HSDF:
         return self.__data.clockPeriod()
 
     def getRetimedSDFG(self):
-        self.__sdfG.Refresh()
-        return  self.__sdfG
+        # self.__sdfG.Refresh()
+        return  self.retimedG
 
     # self.retimedG
     def getRetime(self):
@@ -33,7 +33,7 @@ class Retime_HSDF:
 
         cp = 0
         for i in range(self.__sdfG.getVertexSize() - 1):
-            print(self.__retime)
+            # print(self.__retime)
             self.retimedG = tr.retimeSDF(self.__retime)
             retime_CP = HSDF_CP.HSDF_CP(self.retimedG)
             cp = retime_CP.clockPeriod()
@@ -42,6 +42,7 @@ class Retime_HSDF:
                 if retime_CP.pathTime[j] > c:
                     self.__retime[j] = self.__retime[j] +  1
 
+        self.retimedG = tr.retimeSDF(self.__retime)
         retime_CP = HSDF_CP.HSDF_CP(self.retimedG)
         cp = retime_CP.clockPeriod()
         print('cp: '+str(cp)+'  c: '+str(c))

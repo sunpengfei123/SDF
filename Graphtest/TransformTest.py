@@ -13,8 +13,8 @@ b = DV.Vertex('b', 2)
 c = DV.Vertex('c', 3)
 
 e1 = DE.SDFedge('e1', 1, 1, 1)
-e2 = DE.SDFedge('e2', 0, 1, 1)
-e3 = DE.SDFedge('e3', 1, 1, 1)
+e2 = DE.SDFedge('e2', 1, 1, 1)
+e3 = DE.SDFedge('e3', 0, 1, 1)
 
 # e1 = DE.SDFedge('e1', 0, 1, 1)
 # e2 = DE.SDFedge('e2', 0, 1, 1)
@@ -29,9 +29,6 @@ g.addEdge(a, b, e1)
 g.addEdge(b, c, e2)
 g.addEdge(c, a, e3)
 
-nx.draw_networkx(g.getsdfG())
-plt.show()
-
 
 _CP = Hcp.HSDF_CP(g)
 
@@ -42,15 +39,9 @@ print(cp)
 print('节点信息',g.nodes())
 print('边信息',g.edges())
 
-Re = Retime.Retime_HSDF(g)
-print(Re.feasibleCPTest_2(3))
-print(Re.getRetime())
-# tr = Tran.SDFTransform(g)
-#
-# Rg = tr.retimeSDF([0,1,0,1])
-Rg = Re.getRetimedSDFG()
+tr = Tran.SDFTransform(g)
 
-print('R节点信息',Rg.nodes())
-print('R边信息',Rg.edges())
+Rg = tr.retimeSDF([1,0,0])
 
-
+print('节点信息',Rg.nodes())
+print('边信息',Rg.edges())

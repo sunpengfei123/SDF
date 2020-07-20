@@ -15,39 +15,35 @@ e2 = DE.SDFedge('e2', 1, 1, 1)
 e3 = DE.SDFedge('e3', 0, 1, 1)
 e4 = DE.SDFedge('e4', 0, 1, 1)
 
-g = SDFG.SDFgraph('Retime_Hsdf_Test')
-g.addVertex(a)
-g.addVertex(b)
-g.addVertex(c)
-g.addVertex(d)
-
-g.addEdge(c, a, e1)
-g.addEdge(a, b, e2)
-g.addEdge(c, d, e3)
-g.addEdge(d, b, e4)
-
-nx.draw_networkx(g.getsdfG())
+g = nx.MultiDiGraph()
+g.add_node(a)
+g.add_node(b)
+g.add_edge(a, b, edge=e1)
+nx.draw_networkx(g)
 plt.show()
+vv=[]
+for v in g.nodes():
+    vv.append(v)
+    print(v.getName())
+    print(v.getExeTimeOnMappedProcessor())
+
+for v1, v2, e in g.edges(data=True):
+    print(e['edge'].getName())
 
 
-print('节点信息',g.getsdfG().nodes(data=True))
-print('边信息',g.getsdfG().edges(data=True))
-ee = []
-ee.append(e1)
-ee.append(e3)
-ee.append(e2)
-ee.append(e4)
+for vvv in vv:
+    print(vvv.getName())
 
 
-def take(elem):
-    return elem.getName()
+a.setName('aaa')
+e1.setName('e1111')
 
+for v in g.nodes():
+    print(v.getName())
+    print(v.getExeTimeOnMappedProcessor())
 
-ee.sort(key=take)
-for e in ee:
-    print(e.getName())
+for v1, v2, e in g.edges(data=True):
+    print(e['edge'].getName())
 
-# ee = g.getIncomingEdges(a)
-# print(len(ee))
-# for e in ee:
-#     print(e.getName())
+for vvv in vv:
+    print(vvv.getName())
