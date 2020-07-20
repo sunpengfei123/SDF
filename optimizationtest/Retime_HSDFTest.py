@@ -49,6 +49,10 @@ print(Re.getRetime())
 #
 # Rg = tr.retimeSDF([0,1,0,1])
 Rg = Re.getRetimedSDFG()
+_NewCP = Hcp.HSDF_CP(Rg)
+newcp = _NewCP.clockPeriod()
+print(_NewCP.pathTime)
+print(newcp)
 
 print('R节点信息',Rg.nodes())
 print('R边信息',Rg.edges())
