@@ -495,8 +495,10 @@ class SDFgraph:
     def edges(self):
         eset = []
         for v1, v2, ee in self.__sdfG.edges(data=True):
-            eset.append((v1.getName(), v2.getName(), ee['edge'].getName(), {'delay', ee['edge'].getDelay()},
-                         {'produceRate', ee['edge'].getProduceRate()}, {'consumeRate', ee['edge'].getConsumeRate()}))
+            eset.append((v1.getName(), v2.getName(), ee['edge'].getName(),
+                         {'delay', ee['edge'].getDelay()},
+                         {'produceRate', ee['edge'].getProduceRate()},
+                         {'consumeRate', ee['edge'].getConsumeRate()}))
         return eset
 
     def copySDFG(self):
