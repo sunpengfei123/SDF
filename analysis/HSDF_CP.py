@@ -1,3 +1,6 @@
+import sys
+import threading
+
 import networkx as nx
 import matplotlib.pyplot as plt
 
@@ -5,6 +8,8 @@ from sdfGraph import DefVertex as DV
 from sdfGraph import SDFgraph as SDFG
 from sdfGraph import DefEdge as DE
 from sdfGraph import SDFTop as Top
+
+sys.setrecursionlimit(1000000)
 
 class HSDF_CP:
     def __init__(self, g: SDFG.SDFgraph):
@@ -102,3 +107,8 @@ class HSDF_CP:
             if CP < self.pathTime[i]:
                 CP = self.pathTime[i]
         return CP
+
+    if __name__ == "__main__":
+        threading.stack_size(200000000)
+        thread = threading.Thread(target=clockPeriod())
+        thread.start()
