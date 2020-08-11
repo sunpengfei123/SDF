@@ -14,6 +14,9 @@ class Retime_HSDF:
     def getCP(self):
         return self.__data.clockPeriod()
 
+    def getMinCP(self):
+        return self.__MinCP
+
     def getRetimedSDFG(self):
         # self.__sdfG.Refresh()
         return  self.retimedG
@@ -45,8 +48,34 @@ class Retime_HSDF:
         self.retimedG = tr.retimeSDF(self.__retime)
         retime_CP = HSDF_CP.HSDF_CP(self.retimedG)
         cp = retime_CP.clockPeriod()
-        print('cp: '+str(cp)+'  c: '+str(c))
+        # print('cp: '+str(cp)+'  c: '+str(c))
         if cp > c:
             return False
         else:
             return True
+
+    def minCP(self):
+        Max = self.__data.clockPeriod()
+        Min = -1
+        for v in self.__sdfG.getVerticesList():
+            if Min < v.getExeTimeOnMappedProcessor():
+                Min = v.getExeTimeOnMappedProcessor()
+
+        mid = Max
+
+        while Min <= Max:
+
+            mid = int((Max + Min)/2)
+            #print([Max, Min, mid])
+            isFeasible = self.feasibleCPTest_2(mid)
+
+            if not (isFeasible):
+                # print(str(mid)+" is not a feasible clock period. Check a larger one.")
+                Min = mid + 1
+                mid = Min
+            else:
+                # print(str(mid) + " is a feasible clock period. Check a smaller one.")
+                Max = mid - 1
+
+        # print(str(mid) + " is a minimal clock period. ")
+        self.__MinCP = mid

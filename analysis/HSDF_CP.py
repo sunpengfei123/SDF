@@ -17,6 +17,7 @@ class HSDF_CP:
         self.G = gg
         self.__W = []
         self.__D = []
+        self.atop = Top.SDFTop(gg)
         self.dijkstra = []
         self.pathTime = []
 
@@ -28,44 +29,92 @@ class HSDF_CP:
 
     def HSDF_WD(self):
         N = self.G.getVertexSize()
+        weight = []
+        Max = 20
 
         # 初始化W和D
         for i in range(N):
             self.dijkstra.append([])
             self.__W.append([])
             self.__D.append([])
+            weight.append([])
             for j in range(N):
                 self.dijkstra[i].append([])
                 self.__W[i].append([])
                 self.__D[i].append([])
+                weight[i].append([])
+                for k in range(2):
+                    weight[i][j].append(0)
 
-        for i in range(self.G.getVertexSize()):
-            for j in range(self.G.getVertexSize()):
+        # for i in range(self.G.getVertexSize()):
+        #     for j in range(self.G.getVertexSize()):
+        #         if i != j:
+        #             try:
+        #                 self.dijkstra[i][j] = nx.dijkstra_path(self.G.getsdfG(), self.G.getVertexByID(i), self.G.getVertexByID(j), 'delay')
+        #                 self.__W[i][j] = nx.dijkstra_path_length(self.G.getsdfG(), self.G.getVertexByID(i), self.G.getVertexByID(j), 'delay')
+        #                 path = nx.dijkstra_path(self.G.getsdfG(), self.G.getVertexByID(i).getName(),
+        #                                         self.G.getVertexByID(j).getName(), 'delay')
+        #                 d = 0
+        #                 for v in path:
+        #                     d = d + self.G.getVertexByname(v).getExeTimeOnMappedProcessor()
+        #                 self.__D[i][j] = d
+        #             except:
+        #
+        #                 self.dijkstra[i][j] = -1
+        #                 self.__W[i][j] = -1
+        #                 self.__D[i][j] = -1
+        #         else:
+        #             self.dijkstra[i][j] = self.G.getVertexByID(i)
+        #             self.__W[i][j] = -1
+        #             self.__D[i][j] = self.G.getVertexByID(i).getExeTimeOnMappedProcessor()
+        #         # self.__W[i].append(nx.dijkstra_path_length(self.G.getsdfG(), self.G.getVertexByID(i).getName(), self.G.getVertexByID(j).getName(), 'delay'))
+        #         # path = nx.dijkstra_path(self.G.getsdfG(), self.G.getVertexByID(i).getName(), self.G.getVertexByID(j).getName(), 'delay')
+        #         # d = 0
+        #         # for v in path:
+        #         #     d = d + self.G.getVertexByname(v).getExeTimeOnMappedProcessor()
+        #         # self.__D[i].append(d)
+
+        # step 1
+        for i in range(N):
+            for j in range(N):
                 if i != j:
-                    try:
-                        self.dijkstra[i][j] = nx.dijkstra_path(self.G.getsdfG(), self.G.getVertexByID(i).getName(), self.G.getVertexByID(j).getName(), 'delay')
-                        self.__W[i][j] = nx.dijkstra_path_length(self.G.getsdfG(), self.G.getVertexByID(i).getName(), self.G.getVertexByID(j).getName(), 'delay')
-                        path = nx.dijkstra_path(self.G.getsdfG(), self.G.getVertexByID(i).getName(),
-                                                self.G.getVertexByID(j).getName(), 'delay')
-                        d = 0
-                        for v in path:
-                            d = d + self.G.getVertexByname(v).getExeTimeOnMappedProcessor()
-                        self.__D[i][j] = d
-                    except:
+                    weight[i][j][0] = Max
 
-                        self.dijkstra[i][j] = -1
-                        self.__W[i][j] = -1
-                        self.__D[i][j] = -1
-                else:
-                    self.dijkstra[i][j] = self.G.getVertexByID(i)
-                    self.__W[i][j] = -1
-                    self.__D[i][j] = self.G.getVertexByID(i).getExeTimeOnMappedProcessor()
-                # self.__W[i].append(nx.dijkstra_path_length(self.G.getsdfG(), self.G.getVertexByID(i).getName(), self.G.getVertexByID(j).getName(), 'delay'))
-                # path = nx.dijkstra_path(self.G.getsdfG(), self.G.getVertexByID(i).getName(), self.G.getVertexByID(j).getName(), 'delay')
-                # d = 0
-                # for v in path:
-                #     d = d + self.G.getVertexByname(v).getExeTimeOnMappedProcessor()
-                # self.__D[i].append(d)
+        for v in self.G.getVerticesList():
+            i = self.G.getIDofVertex(v)
+            # i = self.atop.getVAL().index(v)
+
+            for e in self.G.getOutgoingEdges(v):
+                j = self.G.getIDofVertex(self.G.getEdgeTarget(e))
+
+                weight[i][j][0] = e.getDelay()
+                weight[i][j][1] = -1*v.getExeTimeOnMappedProcessor()
+        # end step 1
+
+        # step 2
+        for k in range(N):
+            for i in range(N):
+                for j in range(N):
+                    if (weight[i][k][0] + weight[k][j][0]) < weight[i][j][0]:
+                        print('asdfasd')
+                        print(weight[i][k][0])
+                        print(weight[k][j][0])
+                        print(weight[i][j][0])
+                        weight[i][j][0] = weight[i][k][0] + weight[k][j][0]
+                        weight[i][j][1] = weight[i][k][1] + weight[k][j][1]
+                    else:
+                        if (weight[i][k][0]+weight[k][j][0]) == weight[i][j][0]:
+                            if (weight[i][k][1]+weight[k][j][1]) < weight[i][j][1]:
+                                weight[i][j][1] = weight[i][k][1] + weight[k][j][1]
+        # end step 2
+
+        # step 3
+        for i in range(N):
+            for j in range(N):
+                self.__W[i][j] = weight[i][j][0]
+                tempV = self.G.getVertexByID(j)
+                self.__D[i][j] = tempV.getExeTimeOnMappedProcessor() - weight[i][j][1]
+
 
     def Time(self,g: SDFG.SDFgraph, v: DV.Vertex) -> int:
         tg = g
