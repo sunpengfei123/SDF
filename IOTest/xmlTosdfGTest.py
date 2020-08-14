@@ -56,6 +56,7 @@ filedir = 'E:\\TestCase\\2016-TCAD\\GGH92bench\\graph'
 #     print(Re.getMinCP())
 
 path = 'E:\\TestCase\\HSDFGs\\ha1k\\ha1k-000.xml'
+#path = 'E:\\TestCase\\graphs\\hhsdf03_01.xml'
 t = xmlTosdfG.xmlTosdfG(path)
 
 g = t.get_sdfG()
@@ -66,9 +67,9 @@ print('边信息',g.edges())
 # nx.draw_networkx(g.getsdfG())
 # plt.show()
 
-# Hsdf_Cp = Hcp.HSDF_CP(g)
-# p = Hsdf_Cp.clockPeriod()
-# print(p)
+Hsdf_Cp = Hcp.HSDF_CP(g)
+p = Hsdf_Cp.clockPeriod()
+print(p)
 
 Re = Retime.Retime_HSDF(g)
 Re.minCP()

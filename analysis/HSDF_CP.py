@@ -96,10 +96,10 @@ class HSDF_CP:
             for i in range(N):
                 for j in range(N):
                     if (weight[i][k][0] + weight[k][j][0]) < weight[i][j][0]:
-                        print('asdfasd')
-                        print(weight[i][k][0])
-                        print(weight[k][j][0])
-                        print(weight[i][j][0])
+                        # print('asdfasd')
+                        # print(weight[i][k][0])
+                        # print(weight[k][j][0])
+                        # print(weight[i][j][0])
                         weight[i][j][0] = weight[i][k][0] + weight[k][j][0]
                         weight[i][j][1] = weight[i][k][1] + weight[k][j][1]
                     else:
@@ -116,30 +116,35 @@ class HSDF_CP:
                 self.__D[i][j] = tempV.getExeTimeOnMappedProcessor() - weight[i][j][1]
 
 
-    def Time(self,g: SDFG.SDFgraph, v: DV.Vertex) -> int:
-        tg = g
-        tgtop = Top.SDFTop(tg)
-
-        time = -1
+    def Time(self, g: SDFG.SDFgraph, v: DV.Vertex):
+        tgtop = Top.SDFTop(g)
+        i = tgtop.getVAL().index(v)
         # print(v.getName())
         # print(len(tg.getIncomingEdges(v)))
-        if len(tg.getIncomingEdges(v)) == 0:
-            time=v.getExeTimeOnMappedProcessor()
-        else:
-            preTime = -1
-            for e in tg.getIncomingEdges(v):
-                # print(e.getName())
-                # print(tgtop.getVAL()[tg.getSourceIDofEdge(e)].getName()+'Source_name')
-                # print(tgtop.getVAL()[tg.getTargetIDofEdge(e)].getName() + 'Target_name')
-                tt = self.Time(tg,tgtop.getVAL()[tg.getSourceIDofEdge(e)])
-                if preTime < tt:
-                    preTime = tt
-            time = preTime + v.getExeTimeOnMappedProcessor()
-        return time
+        if self.pathTime[i] == 0:
+            if len(g.getIncomingEdges(v)) == 0:
+                self.pathTime[i] = v.getExeTimeOnMappedProcessor()
+                # print(i)
+                # print(self.pathTime[i])
+            else:
+                preTime = -1
+                for e in g.getIncomingEdges(v):
+                    # print(e.getName())
+                    # print(tgtop.getVAL()[tg.getSourceIDofEdge(e)].getName()+'Source_name')
+                    # print(tgtop.getVAL()[tg.getTargetIDofEdge(e)].getName() + 'Target_name')
+                    j = g.getSourceIDofEdge(e)
+                    self.Time(g, tgtop.getVAL()[j])
+
+                    if preTime < self.pathTime[j]:
+                        preTime = self.pathTime[j]
+                self.pathTime[i] = preTime + v.getExeTimeOnMappedProcessor()
+
+            # print(i)
+            # print(self.pathTime[i])
 
     def clockPeriod(self):
         SubG = self.G.DirectedSubgraph()
-
+        # print('subG')
         # nx.draw_networkx(SubG.getsdfG())
         # plt.show()
         # Sub_HSDF_CP = HSDF_CP(SubG)
@@ -149,8 +154,58 @@ class HSDF_CP:
         # print(D)
         CP = -1
         for v in SubG.getVerticesList():
+            self.pathTime.append(0)
+        # for k in range(len(SubG.getVerticesList())-1):
+        #     print(k)
+        #     for v in SubG.getVerticesList():
+        #         # print(v.getName())
+        #         i = SubG.getIDofVertex(v)
+        #         if self.pathTime[i] == 0:
+        #             if len(SubG.getIncomingEdges(v)) == 0:
+        #                 self.pathTime[i] = v.getExeTimeOnMappedProcessor()
+        #             else:
+        #                 preMax = 0
+        #                 for e in SubG.getIncomingEdges(v):
+        #                     eSource = SubG.getEdgeSource(e)
+        #                     j = SubG.getIDofVertex(eSource)
+        #                     if preMax<self.pathTime[j]:
+        #                         preMax = self.pathTime[j]
+        #                 self.pathTime[i] = v.getExeTimeOnMappedProcessor()+preMax
+        #                     # self.Time(SubG, eSource)
+
+        for v in SubG.getVerticesList():
             # print(v.getName())
-            self.pathTime.append(self.Time(SubG,v))
+            i = SubG.getIDofVertex(v)
+            if self.pathTime[i] == 0:
+                if len(SubG.getIncomingEdges(v)) == 0:
+                    self.pathTime[i] = v.getExeTimeOnMappedProcessor()
+                    # print(i)
+                    # print(self.pathTime[i])
+                else:
+                    preMax = 0
+                    for e in SubG.getIncomingEdges(v):
+                        eSource = SubG.getEdgeSource(e)
+                        self.Time(SubG, eSource)
+                        j = SubG.getIDofVertex(eSource)
+                        if preMax < self.pathTime[j]:
+                            preMax = self.pathTime[j]
+                    self.pathTime[i] = v.getExeTimeOnMappedProcessor() + preMax
+                    # print(i)
+                    # print(self.pathTime[i])
+                    # self.Time(SubG, eSource)
+
+        # N = len(SubG.getVerticesList())
+        # self.HSDF_WD()
+        # for i in range(N):
+        #     max = 0
+        #     for j in range(N):
+        #         if self.__W[j][i] == 0:
+        #
+        #             if max < self.__D[j][i]:
+        #                 max = self.__D[j][i]
+        #             print(max)
+        #     self.pathTime[i] = max
+
 
         for i in range(len(self.pathTime)):
             if CP < self.pathTime[i]:
