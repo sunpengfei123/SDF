@@ -29,7 +29,18 @@ g.addEdge(b, c, e5)
 nx.draw_networkx(g.getsdfG())
 plt.show()
 
-print('节点信息',g.nodes())
-print('边信息',g.edges())
+# print(e1)
 
-print(g.getVertexSize())
+# for e in g.getsdfG().get_edge_data(b, c):
+#     print(g.getsdfG().get_edge_data(b, c)[e]['edge'])
+
+# print(g.getsdfG().get_edge_data(b, c))
+
+
+# for e in g.getsdfG().in_edges(c, data=True):
+#     print(e[2]['edge'].getName())
+
+p = {}
+p[e1] = {'source':a,'target':b}
+
+print(p[e1]['source'].getName())

@@ -14,9 +14,11 @@ class SDFgraph:
         self.__name = name  # instance variable unique to each instance
         self.__sdfG = nx.MultiDiGraph()
         self.__Vlist = []
+        self.__Vset = []
         self.__Elist = []
         self.__EH = []
         self.__VH = []
+        self.__vve = {}
 
     def setName(self, name):
         self.__name = name
@@ -40,10 +42,11 @@ class SDFgraph:
 
         :return: 返回值是String类型的数组，是所有顶点名字的序列
         """
-        Vset = []
-        for v in self.__sdfG.nodes():
-            Vset.append(v.getName())
-        return Vset
+
+        if len(self.__Vset) == 0:
+            for v in self.__sdfG.nodes():
+                self.__Vset.append(v.getName())
+        return self.__Vset
 
     def getVerticesList(self) -> [DV.Vertex]:
         """
@@ -63,30 +66,29 @@ class SDFgraph:
         :param v: 输入的节点
         :return: 根据节点求他的ID并返回
         """
-        vw = v
         if len(self.__Vlist) == 0:
             for vv in self.__sdfG.nodes():
                 self.__Vlist.append(vv)
-        for i in range(self.__sdfG.number_of_nodes()):
-            if self.__Vlist[i].getName() == vw.getName():
-                return i
-            if i == int(self.getVertexSize() - 1):
-                print('没有要找的顶点！')
+        # for i in range(self.__sdfG.number_of_nodes()):
+        #     if self.__Vlist[i].getName() == vw.getName():
+        #         return i
+        #     if i == int(self.getVertexSize() - 1):
+        #         print('没有要找的顶点！')
+        return self.__Vlist.index(v)
 
     def getVertexByname(self, name: str) -> DV.Vertex:
         """
         :param name:输入要查询的节点的name,string类型
         :return:返回name对应的Vertex对象
         """
+        if len(self.__Vset) == 0:
+            for vv in self.__sdfG.nodes():
+                self.__Vset.append(vv.getName())
         if len(self.__Vlist) == 0:
             for vv in self.__sdfG.nodes():
                 self.__Vlist.append(vv)
 
-        for i in self.__Vlist:
-            # print('getVertexByname'+i.getName())
-            # print('name'+name)
-            if i.getName() == name:
-                return i
+        return self.__Vlist[self.__Vset.index(name)]
 
 
     def getVertexByID(self, ID: int) -> DV.Vertex:
@@ -120,12 +122,16 @@ class SDFgraph:
         :return: 输出和节点v相连的所有边（Edge类型数组）
         """
         Ev = []
-        for v1, v2, ee in self.__sdfG.edges(data=True):
-            # print(info['name'])
-            if v1 == v:
-                Ev.append(ee['edge'])
-            if v2 == v:
-                Ev.append(ee['edge'])
+        # for v1, v2, ee in self.__sdfG.edges(data=True):
+        #     # print(info['name'])
+        #     if v1 == v:
+        #         Ev.append(ee['edge'])
+        #     if v2 == v:
+        #         Ev.append(ee['edge'])
+        for em in self.__sdfG.out_edges(v, data=True):
+            Ev.append(em[2]['edge'])
+        for em in self.__sdfG.in_edges(v, data=True):
+            Ev.append(em[2]['edge'])
         return Ev
 
     def getOutgoingEdges(self, v: DV.Vertex) -> List[DE.SDFedge]:
@@ -135,9 +141,11 @@ class SDFgraph:
         :return: 输出从节点v出发的所有边（Edge类型数组）
         """
         outE = []
-        for v1, v2, ee in self.__sdfG.edges(data=True):
-            if v1 == v:
-                outE.append(ee['edge'])
+        # for v1, v2, ee in self.__sdfG.edges(data=True):
+        #     if v1 == v:
+        #         outE.append(ee['edge'])
+        for em in self.__sdfG.out_edges(v, data=True):
+            outE.append(em[2]['edge'])
         return outE
 
     def getIncomingEdges(self, v: DV.Vertex) -> List[DE.SDFedge]:
@@ -147,9 +155,11 @@ class SDFgraph:
         :return: 输出以节点v为终点的所有边（Edge类型数组）
         """
         Ev = []
-        for v1, v2, ee in self.__sdfG.edges(data=True):
-            if v2 == v:
-                Ev.append(ee['edge'])
+        # for v1, v2, ee in self.__sdfG.edges(data=True):
+        #     if v2 == v:
+        #         Ev.append(ee['edge'])
+        for em in self.__sdfG.in_edges(v, data=True):
+            Ev.append(em[2]['edge'])
         return Ev
 
     def getOutDegree(self, v: DV.Vertex):
@@ -237,11 +247,7 @@ class SDFgraph:
             for v1, v2, ee in self.__sdfG.edges(data=True):
                 self.__Elist.append(ee['edge'])
 
-        for i in range(self.__sdfG.number_of_edges()):
-            if e == self.__Elist[i]:
-                return i
-            if i == int(self.getEdgeSize() - 1):
-                print('没有要找的边！')
+        return self.__Elist.index(e)
 
 
     def getEdgeofID(self, eID: int) -> DE.SDFedge:
@@ -252,17 +258,19 @@ class SDFgraph:
         if len(self.__Elist) == 0:
             for v1, v2, ee in self.__sdfG.edges(data=True):
                 self.__Elist.append(ee['edge'])
+
         if eID < self.__sdfG.number_of_edges():
             return self.__Elist[eID]
         else:
             print('没有要找的边！')
 
-    def getEdgebyVertex(self, v1: DV.Vertex, v2: DV.Vertex) -> DE.SDFedge:
-        for vv1, vv2, ee in self.__sdfG.edges(data=True):
-            if vv1 == v1:
-                if vv2 == v2:
-                    return ee['edge']
-        print('么有从'+str(v1.getName())+'到'+str(v2.getName())+'的边')
+    def getEdgebyVertex(self, v1: DV.Vertex, v2: DV.Vertex) -> [DE.SDFedge]:
+
+        ee = []
+        for i in self.__sdfG.get_edge_data(v1, v2):
+            ee.append(self.__sdfG.get_edge_data(v1, v2)[i]['edge'])
+        return ee
+
 
 
     def getEdgeSource(self, e: DE.SDFedge) -> DV.Vertex:
@@ -270,12 +278,10 @@ class SDFgraph:
         :param e: 输入边e（Edge类型）
         :return: 输出边e的出发点
         """
-        for v1, v2, ee in self.__sdfG.edges(data=True):
-            try:
-                if e == ee['edge']:
-                    return v1
-            except Exception:
-                print('没有这个节点')
+        try:
+            return self.__vve[e]['source']
+        except Exception:
+            print('没有这个节点或找不到这样的边')
 
     def getSourceIDofEdge(self, e: DE.SDFedge) -> int:
         """
@@ -298,12 +304,10 @@ class SDFgraph:
         :param e: 输入边e(Edge类型)
         :return: 返回e的目标节点
         """
-        for v1, v2, ee in self.__sdfG.edges(data=True):
-            try:
-                if e == ee['edge']:
-                    return v2
-            except Exception:
-                print('找不到这样的边')
+        try:
+            return self.__vve[e]['target']
+        except Exception:
+            print('没有这个节点或找不到这样的边')
 
     def getAllOutgoingVertexIDs(self, v: DV.Vertex) -> List[int]:
         """
@@ -484,6 +488,7 @@ class SDFgraph:
         :return: 将边添加到图中
         """
         self.__EH.append(e)
+        self.__vve[e] = {'source': v1, 'target': v2}
         self.__sdfG.add_edge(v1, v2, edge=e)
 
     def nodes(self):
@@ -501,12 +506,17 @@ class SDFgraph:
                          {'consumeRate', ee['edge'].getConsumeRate()}))
         return eset
 
-    def copySDFG(self):
-        gg = SDFgraph(self.getName()+'_copy')
+    def copySDFG(self, mess=''):
+        gg = SDFgraph(self.getName()+'_copy'+mess)
         for v in self.getVerticesList():
-            gg.addVertex(v)
+            vv = DV.Vertex(v.getName(), v.getExeTimeOnMappedProcessor())
+            gg.addVertex(vv)
+
         for e in self.getEdgeList():
-            gg.addEdge(self.getEdgeSource(e), self.getEdgeTarget(e), e)
+            ee = DE.SDFedge(e.getName(), e.getDelay(), e.getProduceRate(), e.getConsumeRate())
+            v1 = gg.getVertexByname(self.getEdgeSource(e).getName())
+            v2 = gg.getVertexByname(self.getEdgeTarget(e).getName())
+            gg.addEdge(v1, v2, ee)
         return gg
 
     # def Refresh(self):
