@@ -5,7 +5,8 @@ x1,x2,x3 = Ints('x1 x2 x3')
 e1,e2,e3 = Ints('e1 e2 e3')
 w = Int('w')
 
-solver = Solver()#创建一个求解器对象
+#solver = Solver()#创建一个求解器对象
+solver = Optimize()
 solver.add(If(And(x1==x2,x1==0),Or(v1>=v2+5,v2>=v1+3),v1>=0))
 solver.add(If(And(x1==x2,x1==1),Or(v1>=v2+3,v2>=v1+2),v1>=0))
 
@@ -44,7 +45,12 @@ solver.add(If(x1==x2,w>=e1,w>=e1+1))
 solver.add(If(x3==x2,w>=e2,w>=e2+1))
 solver.add(If(x1==x3,w>=e3,w>=e3+1))
 
-solver.add(w<=7)
+solver.minimize(w)
+
+print ("asserted constraints...")
+for c in solver.assertions():
+    print (c)
+
 
 if solver.check() == sat: #check()方法用来判断是否有解，sat(satisify)表示满足有解
     ans = solver.model() #model()方法得到解
