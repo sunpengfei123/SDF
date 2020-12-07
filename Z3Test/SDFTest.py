@@ -65,6 +65,11 @@ for i in range(eNum):
                       Or(e[j] >= e[i] + 1, e[i] >= e[j] + 1), e[i] >= 0))
 
 solver.minimize(w)
+
+# print ("asserted constraints...")
+# for c in solver.assertions():
+#     print (c)
+
 print("开始求解")
 if solver.check() == sat: #check()方法用来判断是否有解，sat(satisify)表示满足有解
     ans = solver.model() #model()方法得到解
