@@ -5,6 +5,7 @@ import math
 
 #path = "C:\\Study\\TestCase\\2016-TCAD\\d0\\a10q1k"
 path = "C:\\Study\\TestCase\\2016-TCAD\\d0\\a20q1k"
+
 filename = 'a20q1k-005.xml'
 
 t = xmlTosdfG.xmlTosdfG(path+'\\'+filename)
@@ -47,8 +48,10 @@ for i in range(vNum):
 for i in range(eNum):
     solver.add(e[i] >= 0)
     vID = g.getSourceIDofEdge(g.getEdgeofID(i))
-    solver.add(e[i] >= v[vID] + g.getVertexByID(vID).getExeTimeOnMappedProcessor() * (1 - x[vID]) +
-               math.ceil(g.getVertexByID(vID).getExeTimeOnMappedProcessor()/2) * x[vID])
+    # solver.add(e[i] >= v[vID] + g.getVertexByID(vID).getExeTimeOnMappedProcessor() * (1 - x[vID]) +
+    #            math.ceil(g.getVertexByID(vID).getExeTimeOnMappedProcessor()/2) * x[vID])
+    solver.add(If((x[vID] == 1), (e[i] >= v[vID] + math.ceil(g.getVertexByID(vID).getExeTimeOnMappedProcessor()/2)),
+                                 (e[i] >= v[vID] + g.getVertexByID(vID).getExeTimeOnMappedProcessor())))
 
     vsIDi = g.getSourceIDofEdge(g.getEdgeofID(i))
     vtIDi = g.getTargetIDofEdge(g.getEdgeofID(i))
