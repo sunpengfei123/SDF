@@ -4,9 +4,10 @@ import math
 
 
 #path = "C:\\Study\\TestCase\\2016-TCAD\\d0\\a10q1k"
-path = "C:\\Study\\TestCase\\2016-TCAD\\d0\\a20q1k"
+path = "C:\\Study\\TestCase\\2016-TCAD\\d0\\a50q1k"
 
-filename = 'a20q1k-005.xml'
+filename = 'a50q1k-002.xml'#a20q1k-005
+
 
 t = xmlTosdfG.xmlTosdfG(path+'\\'+filename)
 
