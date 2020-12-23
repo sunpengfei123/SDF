@@ -1,8 +1,9 @@
 class SDFedge:
-    def __init__(self, name, delay=0, produceRate=1, consumeRate=1):
+    def __init__(self, name, delay=0, produceRate=1, consumeRate=1, tranTime=1):
         self.__name = name  # instance variable unique to each instance
         self.__produceRate = produceRate
         self.__consumeRate = consumeRate
+        self.__tranTime = tranTime
 
         self.__delay = delay
 
@@ -29,3 +30,9 @@ class SDFedge:
 
     def getProduceRate(self):
         return self.__produceRate
+
+    def gettranTime(self):
+        return self.__tranTime
+
+    def settranTime(self, tranTime):
+        self.__tranTime = tranTime

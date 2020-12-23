@@ -55,8 +55,8 @@ filedir = 'E:\\TestCase\\2016-TCAD\\GGH92bench\\graph'
 #     Re.minCP()
 #     print(Re.getMinCP())
 
-path = 'C:\\Study\\TestCase\\HSDFGs\\ha1k\\ha1k-000.xml'
-#path = 'C:\\Study\\TestCase\\graphs\\hhsdf03_01.xml'
+# path = 'C:\\Study\\TestCase\\HSDFGs\\ha1k\\ha1k-000.xml'
+path = 'C:\\Study\\TestCase\\graphs\\hsdf03_02.xml'
 t = xmlTosdfG.xmlTosdfG(path)
 
 g = t.get_sdfG()
@@ -64,13 +64,19 @@ g = t.get_sdfG()
 print('节点信息', g.nodes())
 print('边信息', g.edges())
 
+for v in g.getVerticesList():
+    v.addNewProcessorType('arm',34)
+    print(v.getprocessorAndexetimeDict())
+
+
+
 # nx.draw_networkx(g.getsdfG())
 # plt.show()
 
-Hsdf_Cp = Hcp.HSDF_CP(g)
-p = Hsdf_Cp.clockPeriod()
-print(p)
-
-Re = Retime.Retime_HSDF(g)
-Re.minCP()
-print(Re.getMinCP())
+# Hsdf_Cp = Hcp.HSDF_CP(g)
+# p = Hsdf_Cp.clockPeriod()
+# print(p)
+#
+# Re = Retime.Retime_HSDF(g)
+# Re.minCP()
+# print(Re.getMinCP())

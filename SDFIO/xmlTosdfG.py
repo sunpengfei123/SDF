@@ -28,6 +28,8 @@ class xmlTosdfG:
             if attributes.tag == 'actor':
                 v_mess.append(attributes.attrib)
                 v = DV.Vertex(attributes.attrib['name'])
+                v.setprocessorAndexetimeDict({})
+                v.setProcessorTypeNameArray([])
                 v_list.append(v)
                 mess = {'actor_name': attributes.attrib['name']}
                 for aa in attributes:
@@ -58,10 +60,14 @@ class xmlTosdfG:
 
         for v in v_list:
             sdfg.addVertex(v)
+        # print(Mess)
         for m in Mess:
+            v = sdfg.getVertexByname(m['name'])
+            v.addNewProcessorType(m['type'], int(m['time']))
             if m['default'] == 'true':
-                v = sdfg.getVertexByname(m['name'])
                 v.setExeTimeOnMappedProcessor(int(m['time']))
+                v.setmappedProcessorType(m['type'])
+
         for c in channel_list:
             for p in port_mess:
                 if p['actor_name'] == c['srcActor']:
